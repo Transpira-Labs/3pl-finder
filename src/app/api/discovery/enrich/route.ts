@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || undefined,
     opensosApiKey: process.env.OPENSOSDATA_API_KEY || undefined,
     openmartApiKey: process.env.OPENMART_API_KEY || undefined,
+    saleshandyApiKey: process.env.SALESHANDY_API_KEY || undefined,
     locale: locale ?? "en",
   });
 

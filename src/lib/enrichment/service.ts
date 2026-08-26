@@ -8,7 +8,8 @@
  * 3. Apollo.io for owner contact info (optional, needs API key)
  * 4. OpenSOSData — Secretary of State business registry (optional)
  * 5. Openmart — owner phone/email lookup (optional)
- * 6. Claude AI to synthesize everything
+ * 6. SalesHandy — owner phone/email via Lead Finder (optional)
+ * 7. Claude AI to synthesize everything
  */
 
 // ---------- Types ----------
@@ -366,6 +367,77 @@ async function fetchOpenmartData(
   }
 }
 
+// ---------- SalesHandy Lead Finder ----------
+
+async function fetchSalesHandyContact(
+  companyName: string,
+  storeAddress: string,
+  apiKey: string,
+): Promise<EnrichmentResult["owner"]> {
+  try {
+    // Extract location from address (e.g. "Atlanta, GA")
+    const locationMatch = storeAddress.match(/,\s*([^,]+,\s*[A-Z]{2})/);
+    const location = locationMatch?.[1]?.trim() ?? "";
+
+    const res = await fetch("https://open-api.saleshandy.com/v1/search/people", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        company_name: { includes: [companyName] },
+        management_level: { includes: ["Owner", "Founder", "C-Suite", "VP"] },
+        ...(location ? { company_hq_location: { includes: [location] } } : {}),
+        page: 1,
+        limitPerCompany: 1,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) {
+      console.error("[enrichment] SalesHandy API error:", res.status, await res.text().catch(() => ""));
+      return null;
+    }
+
+    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const people = data.payload?.data ?? data.payload?.leads ?? data.data ?? [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const person = Array.isArray(people) ? people[0] : null;
+    if (!person) return null;
+
+    // Extract phone — SalesHandy may return it in various fields
+    const phone =
+      person.phone_number ??
+      person.phone ??
+      person.direct_phone ??
+      person.mobile_phone ??
+      (Array.isArray(person.phone_numbers) ? person.phone_numbers[0]?.number : null) ??
+      null;
+
+    const email =
+      person.email ??
+      person.work_email ??
+      person.primary_email ??
+      null;
+
+    return {
+      name: person.full_name ?? person.name ?? person.first_name
+        ? `${person.first_name ?? ""} ${person.last_name ?? ""}`.trim()
+        : null,
+      title: person.job_title ?? person.title ?? person.designation ?? null,
+      email,
+      phone,
+      linkedin: person.linkedin_url ?? person.linkedin ?? null,
+      source: "SalesHandy",
+    };
+  } catch (err) {
+    console.error("[enrichment] SalesHandy error:", err);
+    return null;
+  }
+}
+
 // ---------- Claude AI Summary ----------
 
 async function generateAISummary(opts: {
@@ -551,6 +623,7 @@ export async function enrichStore(opts: {
   anthropicApiKey?: string;
   opensosApiKey?: string;
   openmartApiKey?: string;
+  saleshandyApiKey?: string;
   locale?: string;
 }): Promise<EnrichmentResult> {
   const sources: string[] = [];
@@ -604,8 +677,15 @@ export async function enrichStore(opts: {
     if (openmartOwner) sources.push("Openmart");
   }
 
-  // 6. Merge owner data — prioritize phone number
-  const owner = mergeOwnerData(openmartOwner, apolloOwner, sosOwner);
+  // 6. SalesHandy — owner phone/email via Lead Finder (optional)
+  let saleshandyOwner: EnrichmentResult["owner"] = null;
+  if (opts.saleshandyApiKey) {
+    saleshandyOwner = await fetchSalesHandyContact(opts.storeName, opts.storeAddress, opts.saleshandyApiKey);
+    if (saleshandyOwner) sources.push("SalesHandy");
+  }
+
+  // 7. Merge owner data — prioritize phone number
+  const owner = mergeOwnerData(saleshandyOwner, openmartOwner, apolloOwner, sosOwner);
 
   // 7. AI Summary (needs Anthropic key)
   let summary: EnrichmentResult["summary"] = null;
