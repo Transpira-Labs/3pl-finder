@@ -169,9 +169,12 @@ export default function PipelinePage() {
     : leads.length;
 
   return (
-    <main className="flex h-[calc(100vh)] overflow-hidden">
+    <main className="flex flex-col md:flex-row h-[calc(100vh)] overflow-hidden">
       {/* Left: Lead list */}
-      <div className="flex w-[380px] shrink-0 flex-col border-r">
+      <div className={cn(
+        "flex w-full md:w-[380px] shrink-0 flex-col border-b md:border-b-0 md:border-r",
+        selectedId && "hidden md:flex"
+      )}>
         {/* Header */}
         <div className="border-b px-5 py-4">
           <h1 className="font-display text-lg font-bold">{t("pipeline.title")}</h1>
@@ -223,7 +226,7 @@ export default function PipelinePage() {
         </div>
 
         {/* Lead list */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto max-h-[35vh] md:max-h-none">
           {leads.length === 0 && (
             <div className="px-4 py-12 text-center">
               <Building2 className="mx-auto h-8 w-8 text-muted-foreground/40" />
@@ -272,7 +275,7 @@ export default function PipelinePage() {
       {/* Right: Detail pane */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {!selectedId && (
-          <div className="flex flex-1 items-center justify-center bg-muted/20">
+          <div className="hidden md:flex flex-1 items-center justify-center bg-muted/20">
             <div className="text-center">
               <UserRound className="mx-auto h-10 w-10 text-muted-foreground/20" />
               <p className="mt-3 text-sm font-medium text-muted-foreground/70">{t("pipeline.selectStore")}</p>
@@ -290,7 +293,16 @@ export default function PipelinePage() {
         {selectedId && detail && !detailLoading && (
           <div className="flex flex-1 flex-col overflow-hidden">
             {/* Store header */}
-            <div className="border-b px-6 py-4">
+            <div className="border-b px-4 py-3 md:px-6 md:py-4">
+              {/* Mobile back button */}
+              <button
+                type="button"
+                onClick={() => { setSelectedId(null); setDetail(null); }}
+                className="mb-2 flex md:hidden items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+              >
+                <ChevronRight className="h-4 w-4 rotate-180" />
+                {es ? "Volver" : "Back"}
+              </button>
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <h2 className="text-lg font-semibold">{detail.name ?? "Unknown Company"}</h2>
@@ -376,7 +388,7 @@ export default function PipelinePage() {
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+            <div className="flex-1 overflow-y-auto px-4 py-3 md:px-6 md:py-4 space-y-5">
 
               {/* AI Sales Brief */}
               {enrichData?.summary && (
@@ -486,7 +498,7 @@ export default function PipelinePage() {
             </div>
 
             {/* Note input — always visible at bottom */}
-            <div className="border-t px-6 py-3">
+            <div className="border-t px-4 py-2 md:px-6 md:py-3">
               <div className="flex gap-2">
                 <Input
                   id="note-input"

@@ -316,7 +316,7 @@ export default function StoreDetailPage() {
       <div className="relative">
         {/* Photo banner */}
         {detail && detail.photos.length > 0 ? (
-          <div className="relative h-72 w-full overflow-hidden bg-muted">
+          <div className="relative h-48 md:h-72 w-full overflow-hidden bg-muted">
             <PhotoCarousel photos={detail.photos} name={store.name} />
             {/* Gradient overlay so text on top is readable */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
@@ -326,7 +326,7 @@ export default function StoreDetailPage() {
         )}
 
         {/* Back button overlay */}
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-3 left-3 md:top-4 md:left-4">
           <Button
             variant="secondary"
             size="sm"
@@ -339,7 +339,7 @@ export default function StoreDetailPage() {
         </div>
 
         {/* Pipeline action overlay */}
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-3 right-3 md:top-4 md:right-4">
           {isInPipeline ? (
             <div className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white shadow-md">
               <Check className="h-4 w-4" />
@@ -355,9 +355,9 @@ export default function StoreDetailPage() {
       </div>
 
       {/* Store identity bar */}
-      <div className="border-b px-8 py-5">
-        <h1 className="text-2xl font-bold tracking-tight">{store.name}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="border-b px-4 py-4 md:px-8 md:py-5">
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight">{store.name}</h1>
+        <div className="mt-2 flex flex-wrap items-center gap-2 md:gap-4 text-sm text-muted-foreground">
           {storeAddress && (
             <span className="inline-flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5" />
@@ -394,7 +394,7 @@ export default function StoreDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-8 py-6 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 md:px-8 md:py-6 space-y-8">
         {/* Loading state */}
         {enrichLoading && !enrichment && (
           <div className="flex items-center gap-3 rounded-xl border border-dashed p-6 text-muted-foreground">

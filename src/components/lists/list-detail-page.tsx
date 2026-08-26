@@ -176,7 +176,7 @@ export function ListDetailPage() {
   if (!list) return null;
 
   return (
-    <main className="h-[calc(100vh)] overflow-y-auto px-6 py-5">
+    <main className="h-[calc(100vh)] overflow-y-auto px-3 py-3 md:px-6 md:py-5">
       {/* Header */}
       <div className="mb-5">
         <Link
@@ -186,7 +186,7 @@ export function ListDetailPage() {
           <ArrowLeft className="h-3.5 w-3.5" />
           {t("lists.title")}
         </Link>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-xl font-bold">{list.name}</h1>
             {list.description && (
@@ -212,7 +212,7 @@ export function ListDetailPage() {
           </div>
 
           {/* Starting location input */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label className="text-xs text-muted-foreground shrink-0">
               {es ? "Salida:" : "Start:"}
             </label>
@@ -238,7 +238,7 @@ export function ListDetailPage() {
 
           {/* Route results */}
           {optimizeResult && (
-            <div className="flex items-center justify-between rounded-lg bg-primary/5 border border-primary/20 px-4 py-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-lg bg-primary/5 border border-primary/20 px-3 py-3 md:px-4">
               <div className="flex items-center gap-4 text-sm">
                 <span>
                   <span className="text-muted-foreground">{es ? "Distancia:" : "Distance:"}</span>{" "}
@@ -284,7 +284,7 @@ export function ListDetailPage() {
 
       {/* Table */}
       {items.length > 0 && (
-        <div className="rounded-xl border shadow-sm overflow-hidden">
+        <div className="rounded-xl border shadow-sm overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -305,7 +305,7 @@ export function ListDetailPage() {
                     {item.position ?? idx + 1}
                   </TableCell>
                   <TableCell className="font-medium">{item.storeName}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                  <TableCell className="text-sm text-muted-foreground max-w-[150px] md:max-w-[200px] truncate">
                     {item.storeAddress ?? "-"}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">

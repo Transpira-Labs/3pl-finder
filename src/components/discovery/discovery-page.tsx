@@ -637,7 +637,7 @@ export function DiscoveryPage() {
   // ---------- Render ----------
 
   return (
-    <main className="h-[calc(100vh)] overflow-y-auto px-5 py-5">
+    <main className="h-[calc(100vh)] overflow-y-auto px-3 py-3 md:px-5 md:py-5">
       {/* Header */}
       <div className="mb-5">
         <h1 className="font-display text-xl font-bold">{t("discovery.title")}</h1>
@@ -647,7 +647,7 @@ export function DiscoveryPage() {
       </div>
 
       {/* Map + panel container */}
-      <div className="relative overflow-hidden rounded-xl border border-border/50 shadow-sm" style={{ height: "calc(100vh - 150px)" }}>
+      <div className="relative overflow-hidden rounded-xl border border-border/50 shadow-sm" style={{ height: "calc(100vh - 130px)" }}>
         {/* Map fills the rounded box */}
         <div className="absolute inset-0">
           <DiscoveryMap
@@ -717,8 +717,8 @@ export function DiscoveryPage() {
         </div>
 
         {/* Left overlay panel */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex w-[380px] flex-col p-3">
-          <div className="pointer-events-auto flex flex-col gap-2 overflow-hidden rounded-xl bg-background/95 shadow-xl ring-1 ring-foreground/10 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 md:inset-y-0 md:inset-x-auto md:left-0 z-10 flex w-full md:w-[380px] flex-col p-2 md:p-3">
+          <div className="pointer-events-auto flex flex-col gap-2 overflow-hidden rounded-xl bg-background/95 max-h-[55vh] md:max-h-none shadow-xl ring-1 ring-foreground/10 backdrop-blur-sm">
           {/* Search controls */}
           <div className="space-y-2 p-3 pb-0">
             <div className="flex items-center gap-2">
@@ -732,7 +732,7 @@ export function DiscoveryPage() {
               <select
                 value={radius}
                 onChange={(e) => setRadius(Number(e.target.value))}
-                className="h-8 w-24 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring"
+                className="h-8 w-20 md:w-24 shrink-0 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring"
               >
                 {RADIUS_OPTIONS.map((r) => (
                   <option key={r} value={r}>
@@ -768,7 +768,7 @@ export function DiscoveryPage() {
             </p>
 
             {/* State quick filters */}
-            <div className="flex flex-wrap items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1 overflow-x-auto">
               {SE_STATES.map((state) => (
                 <button
                   key={state}
@@ -835,7 +835,7 @@ export function DiscoveryPage() {
           </div>
 
           {/* Results list */}
-          <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 140px)" }}>
+          <div className="overflow-y-auto flex-1 min-h-0" style={{ maxHeight: "calc(50vh - 120px)" }}>
             {/* Empty state */}
             {!hasSearched && !loading && (
               <div className="px-3 py-8 text-center">
@@ -957,7 +957,7 @@ export function DiscoveryPage() {
 
         {/* Right detail panel */}
         {detailStore && (
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-[360px] flex-col p-3">
+          <div className="pointer-events-none absolute inset-0 md:inset-y-0 md:inset-x-auto md:right-0 z-10 flex w-full md:w-[360px] flex-col p-2 md:p-3">
             <div className="pointer-events-auto flex flex-col overflow-hidden rounded-xl bg-background/95 shadow-xl ring-1 ring-foreground/10 backdrop-blur-sm">
               {/* Close button */}
               <div className="flex items-center justify-between border-b px-3 py-2">
@@ -971,7 +971,7 @@ export function DiscoveryPage() {
                 </button>
               </div>
 
-              <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 200px)" }}>
+              <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 240px)" }}>
                 {detailLoading && (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
