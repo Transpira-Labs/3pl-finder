@@ -95,31 +95,28 @@ function useLabels() {
     addToPipeline: es ? "Agregar al Pipeline" : "Add to Pipeline",
     alreadyInPipeline: es ? "Ya en Pipeline" : "Already in Pipeline",
     ownerContact: es ? "Contacto Principal" : "Key Contact",
-    storeInfo: es ? "Información de la Empresa" : "Company Info",
+    companyOverview: es ? "Resumen de la Empresa" : "Company Overview",
+    companyInfo: es ? "Información de la Empresa" : "Company Info",
     businessRegistry: es ? "Registro Comercial" : "Business Registry",
-    aiSalesBrief: es ? "Resumen de Ventas IA" : "AI Sales Brief",
-    salesAngle: es ? "Angulo de Venta" : "Sales Angle",
-    customerBase: es ? "Base de Clientes" : "Customer Base",
-    size: es ? "Tamano" : "Size",
+    keyFindings: es ? "Hallazgos Clave" : "Key Findings",
+    clientBase: es ? "Clientes Típicos" : "Typical Clients",
+    size: es ? "Tamaño" : "Company Size",
     estRevenue: es ? "Ingresos Est." : "Est. Revenue",
-    productsTheyCarry: es ? "Servicios Ofrecidos" : "Services Offered",
-    customerReviews: es ? "Reseñas de Clientes" : "Client Reviews",
+    services: es ? "Servicios y Capacidades" : "Services & Capabilities",
+    clientReviews: es ? "Reseñas de Clientes" : "Client Reviews",
     hours: es ? "Horario" : "Hours",
-    phone: es ? "Telefono" : "Phone",
+    phone: es ? "Teléfono" : "Phone",
     website: es ? "Sitio Web" : "Website",
     googleMaps: es ? "Ver en Mapa" : "Google Maps",
     entity: es ? "Tipo de Entidad" : "Entity Type",
-    formed: es ? "Fecha de Formacion" : "Formed",
+    formed: es ? "Fecha de Formación" : "Formed",
     regStatus: es ? "Estado" : "Status",
-    regAgent: es ? "Agente Registrado" : "Registered Agent",
-    officers: es ? "Directivos" : "Officers",
     overview: es ? "Resumen" : "Overview",
     sources: es ? "Fuentes" : "Sources",
     loading: es ? "Cargando datos de la empresa..." : "Loading company data...",
-    enriching: es ? "Analizando empresa - leyendo reseñas, sitio web..." : "Analyzing company - reading reviews, website...",
+    enriching: es ? "Investigando empresa — analizando reseñas, sitio web, servicios..." : "Researching company — analyzing reviews, website, services...",
     notFound: es ? "Empresa no encontrada" : "Company not found",
-    ownerInsights: es ? "Menciones de Contactos" : "Contact Insights",
-    noReviews: es ? "Sin resenas disponibles" : "No reviews available",
+    contactInsights: es ? "Información de Contacto" : "Contact Information",
   };
 }
 
@@ -397,63 +394,79 @@ export default function StoreDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-8 py-6 space-y-6">
+      <div className="max-w-6xl mx-auto px-8 py-6 space-y-8">
         {/* Loading state */}
         {enrichLoading && !enrichment && (
-          <div className="flex items-center gap-3 rounded-lg border border-dashed p-5 text-muted-foreground">
+          <div className="flex items-center gap-3 rounded-xl border border-dashed p-6 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
             <span className="text-sm">{labels.enriching}</span>
           </div>
         )}
 
-        {/* Sales Angle — most important, goes first */}
+        {/* At-a-Glance row — size, revenue, rating */}
+        {enrichment?.summary && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="rounded-xl border p-4">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{labels.size}</p>
+              <p className="mt-1 text-xl font-bold">{enrichment.summary.estimatedSize}</p>
+            </div>
+            <div className="rounded-xl border p-4">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{labels.estRevenue}</p>
+              <p className="mt-1 text-xl font-bold">{enrichment.summary.estimatedRevenue}</p>
+            </div>
+            {detail?.rating != null && (
+              <div className="rounded-xl border p-4">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Rating</p>
+                <p className="mt-1 text-xl font-bold inline-flex items-center gap-1.5">
+                  <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
+                  {detail.rating.toFixed(1)}
+                  <span className="text-sm font-normal text-muted-foreground">({detail.ratingCount})</span>
+                </p>
+              </div>
+            )}
+            {storePhone && (
+              <div className="rounded-xl border p-4">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{labels.phone}</p>
+                <a href={`tel:${storePhone}`} className="mt-1 text-sm font-semibold text-primary hover:underline block">
+                  {storePhone}
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Key Findings — the most important insight */}
         {enrichment?.summary?.salesAngle && (
-          <div className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5">
-            <h2 className="text-xs font-bold text-primary uppercase tracking-wider mb-2">{labels.salesAngle}</h2>
+          <div className="rounded-xl border-2 border-primary/20 bg-primary/5 p-6">
+            <h2 className="text-xs font-bold text-primary uppercase tracking-wider mb-2">{labels.keyFindings}</h2>
             <p className="text-sm leading-relaxed">{enrichment.summary.salesAngle}</p>
           </div>
         )}
 
-        {/* Two-column: Overview + Details */}
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        {/* Two-column layout */}
+        <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
           {/* Main column */}
-          <div className="space-y-6">
-            {/* Overview */}
+          <div className="space-y-8">
+            {/* Company Overview */}
             {enrichment?.summary?.overview && (
               <section>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{labels.overview}</h2>
-                <p className="text-sm leading-relaxed">{enrichment.summary.overview}</p>
+                <h2 className="text-sm font-bold mb-3">{labels.companyOverview}</h2>
+                <p className="text-sm leading-relaxed text-muted-foreground">{enrichment.summary.overview}</p>
               </section>
             )}
 
-            {/* Customer Base */}
-            {enrichment?.summary?.customerBase && (
-              <section>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{labels.customerBase}</h2>
-                <p className="text-sm leading-relaxed text-muted-foreground">{enrichment.summary.customerBase}</p>
-              </section>
-            )}
-
-            {/* Owner Insights */}
-            {enrichment?.summary?.ownerInsights && (
-              <section>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{labels.ownerInsights}</h2>
-                <p className="text-sm italic leading-relaxed text-muted-foreground">{enrichment.summary.ownerInsights}</p>
-              </section>
-            )}
-
-            {/* Products — the grid */}
+            {/* Services & Capabilities — the main draw */}
             {enrichment?.summary?.productsDetailed && enrichment.summary.productsDetailed.length > 0 && (
               <section>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">{labels.productsTheyCarry}</h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <h2 className="text-sm font-bold mb-4">{labels.services}</h2>
+                <div className="grid gap-3 sm:grid-cols-2">
                   {enrichment.summary.productsDetailed.map((cat, i) => (
-                    <div key={i} className="rounded-lg border p-3">
-                      <p className="text-xs font-semibold mb-2">{cat.category}</p>
-                      <ul className="space-y-1">
+                    <div key={i} className="rounded-xl border p-4">
+                      <p className="text-sm font-semibold mb-2">{cat.category}</p>
+                      <ul className="space-y-1.5">
                         {cat.items.map((item, j) => (
-                          <li key={j} className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <span className="h-1 w-1 shrink-0 rounded-full bg-primary/40" />
+                          <li key={j} className="text-xs text-muted-foreground flex items-start gap-2">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/50" />
                             {item}
                           </li>
                         ))}
@@ -464,27 +477,35 @@ export default function StoreDetailPage() {
               </section>
             )}
 
-            {/* Fallback flat product list */}
+            {/* Fallback: flat service tags */}
             {enrichment?.summary?.productsCarried &&
               enrichment.summary.productsCarried.length > 0 &&
               (!enrichment.summary.productsDetailed || enrichment.summary.productsDetailed.length === 0) && (
               <section>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">{labels.productsTheyCarry}</h2>
-                <div className="flex flex-wrap gap-1.5">
+                <h2 className="text-sm font-bold mb-3">{labels.services}</h2>
+                <div className="flex flex-wrap gap-2">
                   {enrichment.summary.productsCarried.map((p, i) => (
-                    <span key={i} className="rounded-full border px-2.5 py-0.5 text-xs">{p}</span>
+                    <span key={i} className="rounded-lg border bg-muted/30 px-3 py-1.5 text-xs font-medium">{p}</span>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Reviews */}
+            {/* Typical Clients */}
+            {enrichment?.summary?.customerBase && (
+              <section>
+                <h2 className="text-sm font-bold mb-3">{labels.clientBase}</h2>
+                <p className="text-sm leading-relaxed text-muted-foreground">{enrichment.summary.customerBase}</p>
+              </section>
+            )}
+
+            {/* Client Reviews */}
             {enrichment?.reviewSnippets && enrichment.reviewSnippets.length > 0 && (
               <section>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">{labels.customerReviews}</h2>
+                <h2 className="text-sm font-bold mb-3">{labels.clientReviews}</h2>
                 <div className="space-y-2">
                   {enrichment.reviewSnippets.slice(0, 5).map((snippet, i) => (
-                    <div key={i} className="rounded-lg bg-muted/40 px-4 py-3">
+                    <div key={i} className="rounded-xl border px-5 py-4">
                       <p className="text-sm italic text-muted-foreground leading-relaxed">&ldquo;{snippet}&rdquo;</p>
                     </div>
                   ))}
@@ -493,51 +514,46 @@ export default function StoreDetailPage() {
             )}
           </div>
 
-          {/* Sidebar — quick facts */}
+          {/* Sidebar */}
           <div className="space-y-4">
-            {/* Size + Revenue cards */}
-            {enrichment?.summary && (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border p-4 text-center">
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{labels.size}</p>
-                  <p className="mt-1 text-lg font-bold">{enrichment.summary.estimatedSize}</p>
-                </div>
-                <div className="rounded-xl border p-4 text-center">
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{labels.estRevenue}</p>
-                  <p className="mt-1 text-lg font-bold">{enrichment.summary.estimatedRevenue}</p>
-                </div>
-              </div>
-            )}
+            {/* Contact */}
+            <div className="rounded-xl border p-4">
+              <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                <User className="h-3.5 w-3.5" />
+                {labels.contactInsights}
+              </h3>
 
-            {/* Owner / Contact */}
-            {enrichment?.owner && (
-              <div className="rounded-xl border p-4">
-                <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                  <User className="h-3.5 w-3.5" />
-                  {labels.ownerContact}
-                </h3>
-                {enrichment.owner.name && (
-                  <p className="font-semibold">
-                    {enrichment.owner.name}
-                    {enrichment.owner.title && (
-                      <span className="ml-1.5 text-xs font-normal text-muted-foreground">{enrichment.owner.title}</span>
-                    )}
-                  </p>
+              {enrichment?.owner?.name && (
+                <p className="font-semibold">
+                  {enrichment.owner.name}
+                  {enrichment.owner.title && (
+                    <span className="ml-1.5 text-xs font-normal text-muted-foreground">{enrichment.owner.title}</span>
+                  )}
+                </p>
+              )}
+
+              {enrichment?.summary?.ownerInsights && (
+                <p className="mt-2 text-xs italic text-muted-foreground">{enrichment.summary.ownerInsights}</p>
+              )}
+
+              <div className="mt-3 space-y-1.5">
+                {storePhone && (
+                  <a href={`tel:${storePhone}`} className="flex items-center gap-1.5 text-sm text-primary hover:underline">
+                    <Phone className="h-3.5 w-3.5" /> {storePhone}
+                  </a>
                 )}
-                <div className="mt-2 space-y-1.5">
-                  {enrichment.owner.phone && (
-                    <a href={`tel:${enrichment.owner.phone}`} className="flex items-center gap-1.5 text-sm text-primary hover:underline">
-                      <Phone className="h-3.5 w-3.5" /> {enrichment.owner.phone}
-                    </a>
-                  )}
-                  {enrichment.owner.email && (
-                    <a href={`mailto:${enrichment.owner.email}`} className="flex items-center gap-1.5 text-sm text-primary hover:underline">
-                      <Mail className="h-3.5 w-3.5" /> {enrichment.owner.email}
-                    </a>
-                  )}
-                </div>
+                {enrichment?.owner?.email && (
+                  <a href={`mailto:${enrichment.owner.email}`} className="flex items-center gap-1.5 text-sm text-primary hover:underline">
+                    <Mail className="h-3.5 w-3.5" /> {enrichment.owner.email}
+                  </a>
+                )}
+                {detail?.website && (
+                  <a href={detail.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-primary hover:underline">
+                    <Globe className="h-3.5 w-3.5" /> {detail.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                  </a>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Hours */}
             {detail?.hours && detail.hours.length > 0 && (
