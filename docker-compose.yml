@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: poveda_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sales
+      POSTGRES_PASSWORD: sales
+      POSTGRES_DB: sales_automation
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sales -d sales_automation"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Production: build and run the app in a container
+  # Usage: docker compose up
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://sales:sales@postgres:5432/sales_automation
+    profiles:
+      - production
+
+volumes:
+  pgdata:

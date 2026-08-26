@@ -1,0 +1,1 @@
+ALTER TYPE "public"."validation_status" ADD VALUE 'duplicate';

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "reps_user_id_uniq" ON "reps" USING btree ("user_id");

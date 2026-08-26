@@ -1,0 +1,1 @@
+ALTER TABLE "leads" ADD COLUMN "enrichment_data" jsonb;
